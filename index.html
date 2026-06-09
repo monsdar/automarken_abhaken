@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <title>Automarken-Abhak-Spiel (mit Logos)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --gap: 10px;
+      --tile-min: 140px;
+      --bg-color: #fff;
+      --text-color: #000;
+      --border-color: #000;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg-color: #121212;
+        --text-color: #e0e0e0;
+        --border-color: #888;
+      }
+    }
+
+    * { box-sizing: border-box }
+
+    body {
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      margin: 0;
+      padding: 24px;
+      background: var(--bg-color);
+      color: var(--text-color);
+    }
+
+    header {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 1.5rem;
+      text-align: left;
+    }
+
+    .meta {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .meta label {
+      font-size: .9rem;
+    }
+
+    .meta input {
+      border: 1px solid var(--border-color);
+      padding: 4px 6px;
+      border-radius: 6px;
+      background: var(--bg-color);
+      color: var(--text-color);
+    }
+
+    .print-button {
+      margin-top: 12px;
+    }
+
+    .print-button button {
+      font-size: 1rem;
+      padding: 8px 16px;
+      border: 2px solid var(--border-color);
+      border-radius: 8px;
+      background: var(--bg-color);
+      color: var(--text-color);
+      cursor: pointer;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(var(--tile-min), 1fr));
+      gap: var(--gap);
+      margin-top: 16px;
+      align-items: stretch;
+      page-break-inside: avoid;
+    }
+
+    .brand {
+      border: 2px solid var(--border-color);
+      border-radius: 10px;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 110px;
+      background: var(--bg-color);
+      color: var(--text-color);
+      position: relative;
+    }
+
+    .brand .logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 8px;
+      min-height: 56px;
+      min-width: 56px;
+    }
+
+    .brand .logo img {
+      max-width: 100%;
+      max-height: 56px;
+      min-width: 32px;
+      min-height: 32px;
+      display: block;
+      filter: grayscale(100%) brightness(0) invert(0);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .brand .logo img {
+        filter: grayscale(100%) brightness(1.5) invert(1);
+      }
+    }
+
+    .brand .name {
+      text-align: center;
+      font-weight: 700;
+      letter-spacing: .2px;
+    }
+
+
+
+    .note {
+      font-size: .95rem;
+      margin-top: 8px;
+    }
+
+    @media print {
+      @page {
+        size: A4 portrait;
+        margin: 14mm;
+      }
+
+      body {
+        padding: 0;
+        background: #fff;
+        color: #000;
+      }
+
+      .meta input, .print-button {
+        display: none;
+      }
+
+      .brand .logo img {
+        filter: grayscale(100%) contrast(100%) !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="print-button">
+    <button onclick="window.print()">🖨️ Drucken</button>
+  </div>
+
+  <div id="grid" class="grid" aria-label="Automarken"></div>
+
+  <script>
+    const CDN = (slug) => `https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/${slug}.svg`;
+
+    const BRANDS = [
+      { name: "Audi", slug: "audi" },
+      { name: "BMW", slug: "bmw" },
+      { name: "Volkswagen", slug: "volkswagen" },
+      { name: "Opel", slug: "opel" },
+      { name: "Ford", slug: "ford" },
+      
+      { name: "Peugeot", slug: "peugeot" },
+      { name: "Renault", slug: "renault" },
+      { name: "Citroën", slug: "citroen" },
+      { name: "Fiat", slug: "fiat" },
+      { name: "Alfa Romeo", slug: "alfaromeo" },
+      
+      { name: "Škoda", slug: "skoda" },
+      { name: "Seat", slug: "seat" },
+      { name: "Volvo", slug: "volvo" },
+      { name: "Dacia", slug: "dacia" },
+      { name: "Smart", slug: "smart" },
+      
+      { name: "Toyota", slug: "toyota" },
+      { name: "Honda", slug: "honda" },
+      { name: "Hyundai", slug: "hyundai" },
+      { name: "Mazda", slug: "mazda" },
+      { name: "Mitsubishi", slug: "mitsubishi" },
+      
+      { name: "Kia", slug: "kia" },
+      { name: "Land Rover", slug: "landrover" },
+      { name: "Suzuki", slug: "suzuki" },
+      { name: "Subaru", slug: "subaru" },
+      { name: "Nissan", slug: "nissan" },
+      
+      
+      { name: "Tesla", slug: "tesla" },
+      { name: "Polestar", slug: "polestar" },
+      { name: "Lucid Motors", slug: "lucid" },
+      { name: "Mini", slug: "mini" },
+      { name: "Chevrolet", slug: "chevrolet" },
+      
+      { name: "Jeep", slug: "jeep" },
+      { name: "John Deere", slug: "johndeere" },
+      { name: "Deutsche Post", slug: "deutschepost" },
+      { name: "Deutsche Bahn", slug: "deutschebahn" },
+      { name: "Chrysler", slug: "chrysler" },
+      
+      { name: "Porsche", slug: "porsche" },
+      { name: "Ferrari", slug: "ferrari" },
+      { name: "Lamborghini", slug: "lamborghini" },
+      { name: "Maserati", slug: "maserati" },
+      { name: "Bugatti", slug: "bugatti" },
+      
+      { name: "Jaguar", slug: "jaguar" },
+      { name: "Mercedes", slug: "mercedes" },
+      { name: "Cadillac", slug: "cadillac" },
+      { name: "Bentley", slug: "bentley" },
+      { name: "Rolls‑Royce", slug: "rollsroyce" },
+    ];
+
+    const grid = document.getElementById('grid');
+
+    function tileHTML(b) {
+      const src = CDN(b.slug);
+      return `
+        <div class="brand" data-name="${b.name}">
+          <div class="logo">
+            <img loading="lazy" src="${src}" alt="${b.name} Logo" />
+          </div>
+          <div class="name">${b.name}</div>
+        </div>`
+    }
+
+    function render() {
+      grid.innerHTML = BRANDS.map(tileHTML).join('');
+    }
+
+    render();
+  </script>
+</body>
+</html>
